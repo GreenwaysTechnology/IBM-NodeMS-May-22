@@ -1,0 +1,150 @@
+                                           Node.js
+..............................................................................................
+What is Node.js?
+ Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+ Node.js is platform for building enterprise Javascript apps.
+
+Why Node.js?
+ Ryan Dahl (born 1981) is an American software engineer who is best known for creating the 
+Node.js
+  Ryan who created node.js for solving the problem of C10K using Javascript language.
+
+C10K:
+  The C10k problem is the problem of optimizing network sockets to handle a large number of clients at the same time. 
+The name C10k is a numeronym for concurrently handling ten thousand connections.
+
+Blocking and Non Blocking io arch - Sync and async Programming Model
+.....................................................................
+
+What is IO? And How io works?
+
+Any thing that is not happening in the cpu called io.
+
+File Descriptor:
+................
+  Bridge layer between the application and low level 
+
+
+-FD is a datastructure presented inside os kernal at very low level
+-FD is mapper between os and hardware layer
+-FD is entry and exit point of os with IO layer
+-FD is simple c program.
+-FD is broker for io between applications and io os layer
+
+Process:
+ File Descriptor is simple c programming, getting loaded into memory once the process inthe
+application is started.
+
+Every Process has its own File Descriptor.
+
+Here i have "notepad" - application, when i start notepad , os will create file descriptor in memory.
+
+
+FD is a table contains information which maps to IO resources
+
+Integer value	Name	<unistd.h> symbolic constant[1]	<stdio.h> file stream[2]
+0	Standard input	STDIN_FILENO	stdin
+1	Standard output	STDOUT_FILENO	stdout
+2	Standard error	STDERR_FILENO	stderr
+
+FD is very simple array.
+
+IO operations and file Descriptors:
+....................................
+
+IO opertions can vary from reading data from the keyboard to reading data from disk files and network sockets.
+
+When y read data from the keyboard via FDS it is always done via 0th index of fd.
+
+Use case: 
+ I want to read data from the disk file.
+
+if you take any pl, who provides io apis. java.io package and apis 
+
+There are two apis
+
+1.High level api provided by language like java,c,c++..
+2.Low level api provided by os - windows,linux,unix,mac....
+
+Flow
+
+Programming language high level api-------> OS low level api------> File Descriptor----|HL
+..........................................................................................
+.............................................................................................
+			Networking and IO : Network IO: Internet
+..............................................................................................
+
+Client -Server Architecture :  WebServer Working Model
+......................................................
+
+Threading Model:
+
+                         "Request Per Thread Model"
+
+
+Client-----request(io request)----WebServer--new Thread----Starts handling io operation
+
+100 request = 100 threads
+
+10000 request =10000 threads
+.
+.............................................................................................
+
+		C10k : concurrently handling ten thousand connections
+
+
+if create a thread for each request
+
+ =>thread creation,running,control is memory intensive
+ =>CPU is always busy with thread ctx switch
+.................................................................................
+	objective ia how to reduce more threads and keep less threads for io operation.
+.............................................................................................
+			
+Solution:
+
+In 2000, Linux Operating system added new api called "select" Which is first non blocking io api.
+
+select:
+
+1.the first api to make non blocking io calls
+2.select works with read method.
+
+
+poll api :
+
+ poll, ppoll - wait for some event on a file descriptor
+
+In poll we dont need to explicit read call.
+
+
+epoll api:
+
+epoll is a Linux kernel system call for a scalable I/O event notification mechanism, first introduced in version 2.5. 44 of the Linux kernel. 
+Its function is to monitor multiple file descriptors to see whether I/O is possible on any of them.
+.............................................................................................
+			 C10K was solved by limitting no of io threads
+					and 
+                         adding event driven io notification facility
+
+Implementations:
+
+1.NGINX server was the first NonBlocking arch
+2.Node.js was the second Non Blocking arch
+
+Node.js Architecture
+......................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
