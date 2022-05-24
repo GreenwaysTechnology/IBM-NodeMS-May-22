@@ -134,6 +134,1014 @@ Implementations:
 
 Node.js Architecture
 ......................
+Please refer the diagram
+..............................................................................................
+				Node.js Programming
+..............................................................................................
+
+Node.js is js platform which can run js code.
+
+Js code can be even executed on browser js engine.
+
+Browser JS Engine vs Node.js Engine:
+.....................................
+
+Node.js has removed all DOM Api from javascript(browser specific apis)
+
+1.window
+   is top/parent api in browser 
+node.js does not support window
+
+document,history,location,storage apis........
+
+
+Browser does not support Node.js specific apis
+like all nonblocking io apis, 
+
+1.process 
+  like window , process is top level object in node.js
+
+.............................................................................................
+				  NODE REPL-(Read Evaulate Print loop)
+.............................................................................................
+
+1.Used to run js code interactive manner.
+
+
+CMD:
+node
+Welcome to Node.js v16.15.0.
+Type ".help" for more information.
+>let a =10
+undefined
+> a
+10
+> b=20
+20
+> c = a + b
+30
+> function sayHello(){
+... console.log("Hello")
+... }
+undefined
+> sayHello()
+Hello
+undefined
+> function add(a=10,b=20){
+... return a+b
+... }
+undefined
+> add()
+30
+> add(3,90)
+93
+..
+
+> document
+Uncaught ReferenceError: document is not defined
+> location
+Uncaught ReferenceError: location is not defined
+> process
+process {
+  version: 'v16.15.0',
+  versions: {
+    node: '16.15.0',
+    v8: '9.4.146.24-node.20',
+    uv: '1.43.0',
+    zlib: '1.2.11',
+    brotli: '1.0.9',
+    ares: '1.18.1',
+    modules: '93',
+    nghttp2: '1.47.0',
+    napi: '8',
+    llhttp: '6.0.4',
+    openssl: '1.1.1n+quic',
+    cldr: '40.0',
+    icu: '70.1',
+    tz: '2021a3',
+    unicode: '14.0',
+    ngtcp2: '0.1.0-DEV',
+    nghttp3: '0.1.0-DEV'
+  }
+..............................................................................................
+				How to write async programming in node
+..............................................................................................
+
+Async/nonblocking code:
+
+Classification of async code/nonblocking code
+
+1.NonBlocking IO
+
+ 1.1.Network IO
+    HTTP,TCP,UDP...
+
+ 1.2.File IO
+    Reading and writing information from and to disk files
+  
+ 1.3.Process IO
+      Transering data in memory(RAM)
+
+
+2.Timers
+   Used to schedule delayed /cpu insentsive tasks using event loop thread
+
+
+Threading Model and Non blocking apis;
+......................................
+
+In General Node is multi threaded.
+
+Node has two types of threads
+
+1.Event Loop Thread /Main Thread
+
+  Event loop thread responsible for running "nonblocking network io apis and timers"
+  
+  Node supports only one event loop thread(single threaded)
+
+2.Worker threads / worker pool threads
+   
+  Threads are responsible for running "NonBlocking file io operations"
+  Worker pool threads are used for running "Blocking operations - IO,any blocking operations"
+   
+..............................................................................................
+				 Styles of Writing async code in js
+..............................................................................................
+
+There are 3 styles
+
+1.callback style
+2.Promise Style
+3.async await style
+
+Third party style : Reactive Programming- rxjs
+
+1.Using Streams
+..............................................................................................
+
+Async implementation using timer api with all style
+
+Timer with callbacks:
+......................
+
+1.Callback is a handler function which is registered before sending request to the kernal.
+2.Once the task is done by the kernal, which emits events along with data.
+3.Event loop thread extracts the events, assigns the handler function(callback) for processing  data.
+
+How to write callbacks?
+
+Every is callback is written based on higher order functions.
+//async code with timer -  setTimeout 
+
+// function sayGreet(callback) {
+//    callback();
+// }
+// sayGreet(function () {
+//     console.log('Hello')
+// })
+
+function saySomething(message) {
+    return message
+}
+// function delay(callback, timeout) {
+//     setTimeout(callback, timeout)
+// }
+const delay = (callback, timeout) => setTimeout(callback, timeout, 'Hello,I am delayed')
+
+console.log(saySomething('start'))
+delay(data => console.log(data), 1000)
+console.log(saySomething('going on'))
+
+...........................................................................................
+				 Callback chaining or callback nesting
+..........................................................................................
+Sync work flow:
+const res1=api1()
+const res2=api2(res1)
+
+The sync apis output will be input to another api.
+
+Async work flow:
+ The output of one handler , will be input to another handler - callback chaining
+
+Use case
+
+ - call getUser api, which returns user if not , throw error.
+
+ - Based on user i need to call login method, if login failed throw error
+
+ - Based on login output, i need to call dashboard
+//callback chaining
+
+const getUser = (user, resolve, reject) => {
+    //logic
+    if (user) {
+        setTimeout(resolve, 1000, user)
+    } else {
+        setTimeout(reject, 1000, { err: 'User Not Found' })
+    }
+}
+
+const login = (user, resolve, reject) => {
+    if (user.name === 'admin' && user.password === 'admin') {
+        setTimeout(resolve, 1000, 'login success')
+    } else {
+        setTimeout(reject, 1000, 'login failed')
+    }
+}
+
+const dashboard = (status, resolve, reject) => {
+    if (status === 'login success') {
+        setTimeout(resolve, 1000, 'Welcome to Admin')
+    } else {
+        setTimeout(reject, 1000, 'Welcome to Guest')
+    }
+}
+
+//call api 
+let newUser = {
+    name: 'admin',
+    password: 'admin'
+}
+// newUser = null
+getUser(newUser, user => {
+    console.log(user)
+    //login
+    login(user, status => {
+        console.log(status)
+        //dashboard
+        dashboard(status, adminPage => {
+            console.log(adminPage)
+        }, guestPage => {
+            console.log(guestPage)
+        });
+    }, err => {
+        console.log(err)
+    })
+}, err => {
+    console.log(err)
+})
+
+
+Questions:
+
+1.Whether this code is able to understand quickly
+2.Whether this code is able to debug
+3.Whehter this code is scalable?
+4.whether this code is maintaiable?
+
+No.
+                     	 "Callback Hell"
+.............................................................................................
+
+fs.readdir(source, function (err, files) {
+  if (err) {
+    console.log('Error finding files: ' + err)
+  } else {
+    files.forEach(function (filename, fileIndex) {
+      console.log(filename)
+      gm(source + filename).size(function (err, values) {
+        if (err) {
+          console.log('Error identifying file size: ' + err)
+        } else {
+          console.log(filename + ' : ' + values)
+          aspect = (values.width / values.height)
+          widths.forEach(function (width, widthIndex) {
+            height = Math.round(width / aspect)
+            console.log('resizing ' + filename + 'to ' + height + 'x' + height)
+            this.resize(width, height).write(dest + 'w' + width + '_' + filename, function(err) {
+              if (err) console.log('Error writing file: ' + err)
+            })
+          }.bind(this))
+        }
+      })
+    })
+  }
+})
+
+Callback Hell:
+
+ -It is not bug or error in code
+ -It is way of writing callback based program
+ -Callback based non blocking programming hard to understand,maintain,debug,scale Which 
+  called as "Callback Hell".
+
+How to write better async/non blocking code without callbacks?
+
+-Generally without callbacks not possible to write async/non blocking code.
+-Rather we can abstract complexity of writting callbacks.
+
+
+In 2005, JQUERY team started with working complex callback patterns, they found callback hell problem.
+
+They proposed a  Design pattern to write better callback programming(Async) programming.
+
+  "Promise".
+
+Promise is design pattern which hides complexity of callback patterns
+
+
+Since Promise is design pattern, many people have implemented Promise design pattern.
+
+1.JQuery -first promise implementation
+2.many libs and frameworks
+
+...........................................................................................
+
+In order standarize , ECMA committe decided to include Promise Design pattern at language level .(ES 6)
+2012 E6 Committe introduced promise design pattern  as  "Promise" Object  in javascript.
+
+Promises and non blocking,async and callback hell issues:
+...........................................................................................
+				E6 Promise Object
+...........................................................................................
+
+ES 6 Promise Object is the reference implementation of "Promise Design Pattern"
+
+Promise Object Creation Patterns
+................................
+
+1.Factory pattern
+2.Constructor Pattern
+
+Every Promise Object by default is async...Yes Promise Object implements timer with 0 ms by default.
+
+
+Objective:
+
+ To remove callbacks in async/non blocking code. write cleaner async programming.
+ To remove complex callback chaining code.
+
+
+Promise object methods:
+1.then - success
+2.catch - errors
+3.finally - clean up
+factory api to create Promise object
+4.resolve
+5.reject
+.......................................
+6.all
+7.race
+
+1.Factory pattern
+.................
+
+Promise.resolve() =>Promise Object with success and data
+Promise.reject()  => Promise Object with failure and error 
+
+//Promise factory api 
+
+
+function saySomething(message) {
+    return message;
+}
+
+function delay() {
+    return Promise.resolve('Hello,I am promise')
+}
+//logic with resolve and reject
+
+function auth(userName, password) {
+    if (userName === 'admin' && password === 'admin') {
+        return Promise.resolve('login success')
+    }
+    return Promise.reject('Login failed')
+}
+
+console.log(saySomething('start'));
+
+delay().then(res => console.log(res))
+auth('admin','admin')
+    .then(status => console.log(status))
+    .catch(err => console.log(err))
+
+console.log(saySomething('going on'));
+..........................................................................................
+Promise Constructors:
+.....................
+
+   "To convert any existing Callback based async implmentations - timers,io"
+
+
+Promise with Explicit Timers:
+//Promise factory api 
+function saySomething(message) {
+    return message;
+}
+
+function delay() {
+    //using explicit timer 
+    return new Promise((resolve, reject) => {
+        //async logic
+        setTimeout(resolve, 5000, 'Hello,Promise Constructor')
+    })
+}
+//logic with resolve and reject
+
+function auth(userName, password) {
+    return new Promise((resolve, reject) => {
+        if (userName === 'admin' && password === 'admin') {
+            setTimeout(resolve, 2000, 'login success')
+        } else {
+            setTimeout(reject, 2000, 'login failed')
+        }
+    })
+}
+
+console.log(saySomething('start'));
+
+delay().then(res => console.log(res))
+auth('admin', 'admin')
+    .then(status => console.log(status))
+    .catch(err => console.log(err))
+console.log(saySomething('going on'));
+.............................................................................................
+				Promise With Callback Hell-Part1
+............................................................................................
+//callback chaining
+
+const getUser = user => {
+    return new Promise((resolve, reject) => {
+        if (user) {
+            setTimeout(resolve, 1000, user)
+        } else {
+            setTimeout(reject, 1000, { err: 'User Not Found' })
+        }
+    })
+}
+
+const login = user => {
+    return new Promise((resolve, reject) => {
+        if (user.name === 'admin' && user.password === 'admin') {
+            setTimeout(resolve, 1000, 'login success')
+        } else {
+            setTimeout(reject, 1000, 'login failed')
+        }
+    })
+}
+
+
+const dashboard = status => {
+    return new Promise((resolve, reject) => {
+        if (status === 'login success') {
+            setTimeout(resolve, 1000, 'Welcome to Admin')
+        } else {
+            setTimeout(reject, 1000, 'Welcome to Guest')
+        }
+    })
+
+}
+
+//call api 
+let newUser = {
+    name: 'admin',
+    password: 'admin'
+}
+// newUser = null
+// getUser(newUser, user => {
+//     console.log(user)
+//     //login
+//     login(user, status => {
+//         console.log(status)
+//         //dashboard
+//         dashboard(status, adminPage => {
+//             console.log(adminPage)
+//         }, guestPage => {
+//             console.log(guestPage)
+//         });
+//     }, err => {
+//         console.log(err)
+//     })
+// }, err => {
+//     console.log(err)
+// })
+
+getUser(newUser).then(user => {
+    console.log(user)
+    login(user).then(status => {
+        console.log(status)
+        dashboard(status).then(adminPage => console.log(adminPage)).catch(errorPage => {
+            console.log(errorPage)
+        })
+    }).catch(err => {
+        console.log(err)
+    })
+}).catch(err => {
+    console.log(err)
+});
+
+This caller has many catch blocks, which is even more complex
+..............................................................................................
+How to refactor the code?
+
+=>Remove multi catch blocks,Keep only one
+=>Remove nested Then inside functions -  thenables - chaining then methods
+
+const getUser = user => {
+    return new Promise((resolve, reject) => {
+        if (user) {
+            setTimeout(resolve, 1000, user)
+        } else {
+            setTimeout(reject, 1000, { err: 'User Not Found' })
+        }
+    })
+}
+
+const login = user => {
+    return new Promise((resolve, reject) => {
+        if (user.name === 'admin' && user.password === 'admin') {
+            setTimeout(resolve, 1000, 'login success')
+        } else {
+            setTimeout(reject, 1000, 'login failed')
+        }
+    })
+}
+
+
+const dashboard = status => {
+    return new Promise((resolve, reject) => {
+        if (status === 'login success') {
+            setTimeout(resolve, 1000, 'Welcome to Admin')
+        } else {
+            setTimeout(reject, 1000, 'Welcome to Guest')
+        }
+    })
+
+}
+
+//call api 
+let newUser = {
+    name: 'admin',
+    password: 'admin'
+}
+// getUser(newUser).then(user => {
+//     console.log(user)
+//     login(user).then(status => {
+//         console.log(status)
+//         dashboard(status).then(adminPage => console.log(adminPage)).catch(errorPage => {
+//             console.log(errorPage)
+//         })
+//     }).catch(err => {
+//         console.log(err)
+//     })
+// }).catch(err => {
+//     console.log(err)
+// });
+
+// getUser(newUser)
+//     .then(user => {
+//         console.log(user)
+//         return login(user)
+//     })
+//     .then(status => {
+//         console.log(status)
+//         return dashboard(status)
+//     }).then(page => {
+//         console.log(page)
+//     })
+//     .catch(err => {
+//         console.log(err)
+//     })
+
+getUser(newUser)
+    .then(user => login(user))
+    .then(status => dashboard(status)).then(page => console.log(page))
+    .catch(err => console.log(err))
+.............................................................................................
+				Promise Hell
+.............................................................................................
+
+In large code base, you can see many "thenables", how to reduce thenables.
+
+ES 7 introduced even simple keywords , looks like sync program/sequencial call.
+"Sync style of async programm"
+
+"async function and await keyword.
+..............................................................................................
+
+Async Functions:
+
+=>async functions are declared with async keyword
+
+  async function sayHello(){
+
+  }
+=>async functions return Promise with Resolve by default,so async functions are by default non blocking functions
+
+
+  async function sayHello(){
+	return "Hello"  // return Promise.resolve("Hello")
+
+  }
+Call with then
+  sayHello().then()
+
+
+function saySomething(message) {
+    return message
+}
+
+//async functions
+async function delay() {
+    return "Hello" //Promise.resolve("Hello")
+}
+
+console.log(saySomething('start'))
+// console.log(delay())
+delay().then(res => console.log(res))
+console.log(saySomething('going on'))
+..............................................................................................
+			How to resolve Promises without then and catch
+.............................................................................................
+
+await keyword:
+
+=>await keyword is used infront of the function call
+
+   await delay()
+
+=> The function must return Promise,then only await will be valid
+
+=> The await keyword must be used inside async function only.
+
+async function delay() {
+    return "Hello" //Promise.resolve("Hello")
+}
+
+async function main() {
+   const res = await delay()
+}
+
+
+// async function getUser() {
+//     return {
+//         name: 'admin',
+//         password: 'admin'
+//     }
+// }
+
+function getUser() {
+    return Promise.resolve({
+        name: 'admin',
+        password: 'admin'
+    })
+}
+
+async function main() {
+    try {
+        const user = await getUser();
+        console.log(user)
+    } catch (err) {
+        console.log(err)
+    }
+}
+main()
+............................................................................................
+				 How to reduce thenables in chaining
+.............................................................................................
+const getUser = user => {
+    return new Promise((resolve, reject) => {
+        if (user) {
+            setTimeout(resolve, 1000, user)
+        } else {
+            setTimeout(reject, 1000, { err: 'User Not Found' })
+        }
+    })
+}
+
+const login = user => {
+    return new Promise((resolve, reject) => {
+        if (user.name === 'admin' && user.password === 'admin') {
+            setTimeout(resolve, 1000, 'login success')
+        } else {
+            setTimeout(reject, 1000, 'login failed')
+        }
+    })
+}
+
+
+const dashboard = status => {
+    return new Promise((resolve, reject) => {
+        if (status === 'login success') {
+            setTimeout(resolve, 1000, 'Welcome to Admin')
+        } else {
+            setTimeout(reject, 1000, 'Welcome to Guest')
+        }
+    })
+
+}
+
+//call api 
+let newUser = {
+    name: 'admin',
+    password: 'admin'
+}
+
+async function main() {
+    // getUser(newUser)
+    // .then(user => login(user))
+    // .then(status => dashboard(status)).then(page => console.log(page))
+    // .catch(err => console.log(err))
+     try {
+        const user = await getUser(newUser);
+        const status = await login(user)
+        const page = await dashboard(status)
+        console.log(user, status, page)
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+}
+main();
+...........................................................................................
+				   Modularity
+...........................................................................................
+In java Modularity , is presented via "Packages"
+
+Package organize the code  logically.
+
+Customer.java
+
+package com.ibm.cms
+
+public class Customer{}
+
+Java organizes code folders and files Physically.
+
+d:/javaapps/src/
+    com/ibm/cms/Customer.java
+
+
+What about javascript Modularity?
+
+ Javascript is file based modularity physically
+ but logically there is no such modularity at language level.
+
+collection of variable declarations and function.
+
+Once js started growing in large scale, dev struck to organize code.
+
+2000, Smart developers started thinking about how to modualrize js code.
+ 
+
+Module design patterns came.
+
+1.Namespace design pattern : 2000 : jquery
+2.AMD -Async Module Defintion : dojo
+---------------------------------------------------------
+3.CJS - Common JS =  namespace + amd
+4.ES 6 Module design pattern  = amd + cjs
+------------------------------------------------------------
+5.System = AMD = CJS + ES 6
+6.UMD = NAMESPACE + AMD + CJS = ES 6
+
+
+only two design patterns are used in development
+
+1.CJS - Common JS =  namespace + amd
+2.ES 6 Module design pattern  = amd + cjs
+
+CJS ; implemented inside node js. node supports commonjs by default.
+
+I can organize the code , based on these patterns, but what about runtimes?
+  js runtime never suppport these patterns directly then each design pattern is lib.
+
+ Loaders : it is simple js lib to help link and load js files.
+
+////////////////////////////////////////////////////////////////////////////////////////////
+				CommonJS - Implementation
+.............................................................................................
+CommonJS has three keywords
+
+1.code sharing
+-exports
+   -used to share code in form of object
+   -code is packed inside object and shared that object
+-module.exports
+   -used to share code as it is.
+
+2.linking files and importing code
+require('folder/file')
+
+
+
+exports:
+
+src/utils/util.js
+
+//code and pack inside.
+//let exports = {message:'Hello'}
+exports.message = "Hello"
+exports.name = "Subramanian"
+//
+exports.count = 10
+exports.status = true
+exports.address = {
+    city: 'Coimbatore'
+}
+exports.skills = ['Java', 'Javascript']
+exports.calculate = (a = 0, b = 0) => a * b
+
+src/index.js
+const info = require('./uilts/util')
+
+console.log(info)
+console.log(info.name,info.message,info.calculate())
+........................................................................................
+
+module.exports:
+ 
+=>It does not pack the code inside object, it will return as it is.
+=>we cant return mulitple things from module.exports, only one thing you can return
+=>It is really suitable for class or single functions /variables sharing.
+
+
+src/mock-data/todos.js
+// const TODOS = [{ id: 1, text: 'learn node', status: true }];
+
+// module.exports = TODOS
+
+module.exports = [{ id: 1, text: 'learn node', status: true }];
+
+
+src/services/TodoService.js
+const TODOS = require('../mock-data/todos')
+
+class TodoService {
+    constructor() {
+        console.log('TodoService')
+    }
+    //sync api
+    findAll() {
+        return TODOS
+    }
+    //async api - callback based
+    findAllAsyncCb(callback) {
+        setTimeout(callback, 1000, TODOS)
+    }
+    //async api - promise based
+    findAllAsyncPromise() {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000, TODOS)
+        })
+    }
+}
+
+//return class 
+// module.exports = TodoService
+//return object 
+module.exports = new TodoService()
+
+src/index.js
+// const TodoService = require('./services/TodoService')
+const todoService = require('./services/TodoService')
+
+
+async function main() {
+    // let todoService = new TodoService()
+    //sync api call
+    console.log(todoService.findAll())
+    //async api using callbacks
+    todoService.findAllAsyncCb(todos => console.log(todos))
+    //async api using Promises
+    todoService.findAllAsyncPromise().then(todos => console.log(todos))
+
+    //using async await
+    try {
+        const todos = await findAllAsyncPromise();
+        console.log(todos)
+    }
+    catch (err) {
+
+    }
+}
+main()
+.............................................................................................
+				Types of Modules
+
+1.Custom Modules
+2.Node in built modules
+3.Third Party modules.
+..............................................................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
