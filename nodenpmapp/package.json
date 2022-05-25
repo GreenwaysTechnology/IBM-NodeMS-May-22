@@ -1,0 +1,23 @@
+{
+  "name": "nodenpmapp",
+  "version": "1.0.0",
+  "description": "This is npm demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node src/index.js",
+    "hello": "node src/index.js"
+  },
+  "keywords": [
+    "Demo"
+  ],
+  "author": "Subramanian Murugan",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  }
+}

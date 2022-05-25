@@ -1510,7 +1510,7 @@ const writeStr = fs.createWriteStream(outputFileName, config);
 //pipe method is simplest method which wraps resume,pasuse,drain 
 readerStream.pipe(writeStr);
 ..............................................................................................
-				Networking 
+				 Networking 
 			     (Networking - HTTP)
 .............................................................................................
 
@@ -1632,7 +1632,1069 @@ const server = http.createServer(async (req, res) => {
 server.listen(3000, () => {
     console.log(`Http Server is listening at ${server.address().port} ${server.address().address}`)
 })
-..........................&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&....................................
+..........................&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.............................
+			How to read input from the Client
+.....................................................................................
+const http = require('http')
+//create Server
+const server = http.createServer((req, res) => {
+    //read input
+    let data = ''
+    req.on('data', chunk => {
+        data += chunk
+    })
+    req.on('end', () => {
+        console.log(data)
+        res.end('Read is completed')
+    });
+})
+
+//Start Server
+server.listen(3000, () => {
+    console.log(`Http Server is listening at ${server.address().port} ${server.address().address}`)
+})
+.........................&&&&&&&&&&&................................................
+			    Server events
+...................................................................................
+const http = require('http')
+//create Server
+const server = http.createServer((req, res) => {
+    res.end('Hello')
+})
+
+//Start Server
+server.listen(3000, () => {
+    console.log(`Http Server is listening at ${server.address().port} ${server.address().address}`)
+})
+//server events
+server.on('request',(req,res)=>{
+    console.log(`${req.url} - ${req.method} - ${new Date()}`)
+});
+....................................................................................
+			  NPM - Node Package Manager
+...................................................................................
+
+npm is tool is used to distribute node modules to others
+and you can get node modules from others.
+
+npm tool is distributed along with node installation
+
+npm uses public repository server called npmjs.com npmjs.org
+
+tools and libs,frameworks all are distributed as node modules into repository.
+
+Javascript Project Structure:(server side/ client side)
+.........................................................
+
+
+The project must have two things
+
+1.package.json file :
+   meta file which describes the project information
+2.node_modules folder
+   which contains libs/frameworks/tools code.
+
+
+Steps:
+
+1.create project folder
+>mkdir nodenpmapp
+
+2.create src folder
+ nodenpmapp>mkdir src
+
+3.create package.json file
+ npm init
+npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (nodenpmapp)
+version: (1.0.0)
+description: This is npm demo
+entry point: (index.js)
+test command:
+git repository:
+keywords: Demo
+author: Subramanian Murugan
+license: (ISC)
+About to write to E:\session\IBM\2022\may\NodewithMS\nodenpmapp\package.json:
+
+{
+  "name": "nodenpmapp",
+  "version": "1.0.0",
+  "description": "This is npm demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Demo"
+  ],
+  "author": "Subramanian Murugan",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes) yes
+.....................................................................................
+				Package 
+
+Package means collection of node modules(collection of files)
+Every software in js is distributed via node packages
+
+Package Types:
+
+1.public package
+  react
+2.private package 
+  @angular - @-npm private 
+
+
+npm is used
+
+to install,uninstall,publish node modules from node repo / into node repo.
+
+if you install third party modules , into your project, node distributes npm tool ,using this you can install,uninstall,upgrade node modules.
+
+
+installing module:
+
+>npm install  moduleName  --options
+>npm i moduleName --options
+
+
+>npm install module 
+  here no option is told, means default is --save
+
+>npm i module
+
+options:
+ --save ; 
+ --save-dev
+ -g
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+App development ; three stage
+
+1.dev
+2.testing
+3.production.
+
+if you install any packages/dependencies, you can tell that is it for production and developemnt, only dev/testing
+
+if you are installing any node module, you can tell, do you want to use only for development
+or development + production.
+
+Unit testing libs : Junit.jar===>java
+
+ --save = >    development + production
+ --save-dev => only for development
+
+Which code need not be used for production:
+
+1.All testing related  libs/frameworks - unit,e2e
+2.Tools like compilers,frameworks related code.
+
+Who will separate out this depedency(lib) for production/dev
+
+  Build tools -  webpack.
+  npm itself
+    --production
+ webpack will scan package.json---extracting prod depedencies
+
+
+ --save => dev + production
+ default =>dev + production
+
+ --save-dev  -->only dev 
+.....................................................................................
+
+How to install npm package with dev and production?
+
+npm install lodash --save
+npm install jquery  - default to --save (dev and production)
+
+package.json
+
+"dependencies": {
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21"
+}
+
+How to uninstall/delete/remove npm package?
+
+npm uninstall jquery --save
+"dependencies": {
+    "lodash": "^4.17.21"
+  }
+
+How to install npm package which is used only for dev/test purpose?
+
+npm install pkg --save-dev.
+
+Testing libs:
+
+npm install chai --save-dev
+
+  "devDependencies": {
+    "chai": "^4.3.6"
+  }
+.....................................................................................
+	How to install all packages where there is no node_modules folder
+.....................................................................................
+
+eg:
+ if i am uploading project in github, when i upload , i upload without  "node_modules" folder.
+
+ After cloning how to run the project, if you want to run,you have to install all packages.
+
+npm install 
+  It scans package.json file, and installs all packages in one short
+
+
+what if i want to exclude "dev dependencies", Primearly used for production
+
+npm install --production
+   It scans package.json file, and installs only "dependencies" packages in one short
+.....................................................................................
+				Global Modules
+.....................................................................................
+
+-Are installed not inside project, rather installed globally.
+
+ npm install module -g
+
+C:\Users\sasub\AppData\Roaming\npm -- here only all global modules will be installed.
+
+
+Why Global Modules:
+
+ -Tools
+   compilers,webservers,build tools,testing runtime, framework runtime, cli tools for project    creations.
+
+ eg:
+  angular cli, react cli(create-react-app) .......
+
+npm install -g @angular/cli
+
+Demo:
+....
+
+npm install module-name(tool) -g
+
+mocha : unit testing framwork, is used to run java script unit testing on node and browser.
+
+npm install --global mocha
+npm install -g mocha
+
+Steps:
+
+create test folder
+ test
+create spec file
+test
+  -demo.spec.js
+var assert = require('assert');
+describe('Array', function() {
+  describe('#indexOf()', function() {
+    it('should return -1 when the value is not present', function() {
+      assert.equal([1, 2, 3].indexOf(4), -1);
+    });
+  });
+});
+
+nodeapps>mocha
+
+  Array
+    #indexOf()
+      √ should return -1 when the value is not present
+
+
+  1 passing (8ms)
+
+.....................................................................................
+				Scripts
+			      (Automation)
+.....................................................................................
+
+
+How to use javascript for automation?
+
+
+We can automate js applications.
+
+write all auotomation steps inside scripts
+
+ "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+
+key: value
+
+key is called command-script command
+value is task to be executed. ; task could be any thing.
+
+command can be built in or custom commands
+
+npm provides lot of built in commands
+
+start,test,postinstall,preinstall..........
+
+How to run node applications?
+
+1.node folderName/filename.js
+
+2.npm start
+via script
+how to run script
+
+>npm commandname ---incase of built in command
+>npm start
+
+>npm run commandname - custom commands
+>npm run subu
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node src/app.js",
+    "subu"  :"node src/app.js"
+  },
+
+npm test
+npm start
+npm run subu
+....................................................................................
+	        Common Problems in Gobal Modules and how to
+			 Solve using  scripts
+
+
+-Global modules are used for tooling purpose like compilers,build tools,servers,test runners(mocha).
+
+Globals has some issues:
+
+1.version and compablity issue for new projects
+
+
+Steps:
+
+1.npm uninstall mocha -g
+
+2.>mocha --help
+'mocha' is not recognized as an internal or external command,
+operable program or batch file.
+
+3.install mocha locally
+
+ npm install mocha --save-dev
+
+4.>mocha
+'mocha' is not recognized as an internal or external command,
+operable program or batch file.
+
+Why i am getting error?
+  because mocha is command, we cant run directly.
+
+5.solution is run via scripts
+
+package.json
+"scripts": {
+    "test": "mocha",
+    "start": "node src/index.js",
+    "subu": "node src/index.js"
+  }
+
+npm test
+
+> nodeapps@1.0.0 test C:\session\ibm\2021\june\nodemicroservices\nodeapps
+> mocha
+
+
+
+  Array
+    #indexOf()
+      √ should return -1 when the value is not present
+
+
+  1 passing (6ms)
+
+/////////////////////////////////////////////////////////////////////////////////////
+			  Express.js - Web /Api Framework For node.js
+.....................................................................................
+
+
+What is express?
+Express Fast, unopinionated, minimalist web framework for Node.js
+
+express is built on top of http core module.
+
+
+What apps can be built using express?
+
+
+1.RESTFull WebServices
+
+2.Dynamic content generation apps -  spring mvc, .netmvc.   with ui
+
+
+Core features of Express:
+
+1.Abstraction on core http module
+2.lot of apis to send data like json api
+3.routers : to create HTTP based web services and apps quickly.
+4.middlewares : to extend core framework like - logging,database,security,templates...
+
+
+Express Key concepts: in express every thing object
+
+Objects in express
+
+1.Application
+  We call Container object which other objects
+  entry and exit of an application
+  application is created by calling function
+
+2.Request
+
+3.Response
+
+4.Router
+
+
+1.Application object roll:
+
+-Routing HTTP requests
+-Configuring middleware
+-Rendering HTML views
+-Registering a template engine
+
+Express Project setup:
+
+1.You can install express dependencies in existing plain node project
+
+2.You can use express cli , to create project structures
+
+
+Steps:
+
+1.create project folder
+2.create src folder
+3.npm init
+4.install express dependency
+5.start writing code
+
+app.js
+//express app. 
+const express = require('express')
+
+//create application object 
+const app = express()
+
+//api 
+app.get('/', (req, res) => {
+    res.end('Home Page')
+})
+app.get('/api/users', (req, res) => {
+    res.status(200).json([{ id: 1, name: 'admin' }])
+})
+app.post('/api/users', (req, res) => {
+    res.status(200).send('POST')
+})
+app.put('/api/users', (req, res) => {
+    res.status(200).send('PUT')
+})
+app.delete('/api/users', (req, res) => {
+    res.status(200).send('DELETE')
+})
+
+//start server
+
+let serverinfo = app.listen(3000, () => {
+    console.log(`Express server is running @ ${serverinfo.address().port}`)
+})
+...................................................................................
+			Multi Resources and express
+
+Resource:
+ Users
+ Products
+ Comments
+ Customers
+
+//express app. 
+const express = require('express')
+
+//create application object 
+const app = express()
+
+//api 
+app.get('/', (req, res) => {
+    res.end('Home Page')
+})
+app.get('/api/users', (req, res) => {
+    res.status(200).json([{ id: 1, name: 'admin' }])
+})
+app.post('/api/users', (req, res) => {
+    res.status(200).send('POST')
+})
+app.put('/api/users', (req, res) => {
+    res.status(200).send('PUT')
+})
+app.delete('/api/users', (req, res) => {
+    res.status(200).send('DELETE')
+})
+
+app.get('/api/customers', (req, res) => {
+    res.status(200).json([{ id: 1, name: 'admin' }])
+})
+app.post('/api/customers', (req, res) => {
+    res.status(200).send('POST')
+})
+app.put('/api/customers', (req, res) => {
+    res.status(200).send('PUT')
+})
+app.delete('/api/customers', (req, res) => {
+    res.status(200).send('DELETE')
+})
+//start server
+
+let serverinfo = app.listen(3000, () => {
+    console.log(`Express server is running @ ${serverinfo.address().port}`)
+})
+..................................................................................
+			How to scale Express code into modules
+..................................................................................
+
+src/routers/user.router.js
+//router Object 
+const express = require('express')
+const userService = require('../services/user.service')
+const userRouter = express.Router()
+
+userRouter.get('/list', async (req, res) => {
+    try {
+        const users = await userService.findAll();
+        res.status(200).json(users)
+    }
+    catch (err) {
+        res.status(200).json(err)
+    }
+
+})
+userRouter.get('/:id', (req, res) => {
+    res.send(`user ${req.params.id}`)
+})
+userRouter.post('/save', (req, res) => {
+    res.status(200).send('POST')
+})
+userRouter.put('/update', (req, res) => {
+    res.status(200).send('PUT')
+})
+userRouter.delete('/remove', (req, res) => {
+    res.status(200).send('DELETE')
+})
+
+module.exports = userRouter;
+
+src/services/user.service.js
+
+const USERS = [{ id: 1, name: 'admin' }]
+class UserService {
+
+    findAll() {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000,USERS)
+        })
+    }
+}
+
+module.exports = new UserService();
+
+....
+src/app.js
+//express app. 
+const express = require('express')
+const userRouter = require('./routers/users.router')
+
+//create application object 
+const app = express()
+//binding routers with App 
+app.use('/api/users',userRouter)
+
+
+//global routing/home page 
+app.get('/', (req, res) => {
+    res.status(200).json({ page: 'HOME PAGE' })
+})
+
+
+//start server
+
+let serverinfo = app.listen(3000, () => {
+    console.log(`Express server is running @ ${serverinfo.address().port}`)
+})
+...................................................................................
+			How to read request from the client
+...................................................................................
+
+
+const USERS = [{ id: 1, name: 'admin' }]
+class UserService {
+
+    findAll() {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000,USERS)
+        })
+    }
+    create(user){
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000,USERS.concat(user))
+        })
+    }
+}
+
+module.exports = new UserService();
+
+//router Object 
+const express = require('express')
+const userService = require('../services/user.service')
+const userRouter = express.Router()
+
+userRouter.get('/list', async (req, res) => {
+    try {
+        const users = await userService.findAll();
+        res.status(200).json(users)
+    }
+    catch (err) {
+        res.status(200).json(err)
+    }
+
+})
+userRouter.get('/:id', (req, res) => {
+    res.send(`user ${req.params.id}`)
+})
+
+//
+userRouter.post('/save', (req, res) => {
+  
+    let user = '';
+    req.on('data', chunk => {
+        user += chunk
+    })
+    
+    req.on('end', async() => {
+        try {
+            console.log(user)
+            const users = await userService.create(user);
+            console.log(users)
+            res.status(201).location("/api/users/save").json({ message: 'User Created' })
+        }
+        catch (error) {
+            res.status(500).json({ message: error })
+        }
+    });
+
+})
+userRouter.put('/update', (req, res) => {
+    res.status(200).send('PUT')
+})
+userRouter.delete('/remove', (req, res) => {
+    res.status(200).send('DELETE')
+})
+
+module.exports = userRouter;
+.....................................................................................
+				Middlewares
+.....................................................................................
+
+- plugins , can  be plugged
+
+
+types of middlewares
+
+1.built in middlewares
+2.third party middlewares
+3.custom middlewares.
+
+
+
+Use case :
+ How to read JSON input. Express server need to read json which was submitted by endusers 
+User will submit as json --- express need to convert into javascript object.
+
+Without Middleware :
+
+1.we need to register on, end event for reading input
+2.we need to convert input into javascript object - JSON.parse()
+
+//
+userRouter.post('/save', (req, res) => {
+  
+    let user = '';
+    req.on('data', chunk => {
+        user += chunk
+    })
+    
+    req.on('end', async() => {
+        try {
+            console.log(user)
+            const users = await userService.create(JSON.parse(user));
+            console.log(users)
+            res.status(201).location("/api/users/save").json({ message: 'User Created' })
+        }
+        catch (error) {
+            res.status(500).json({ message: error })
+        }
+    });
+
+})
+
+
+With Middleware :
+
+-any middleware is simple javascript module/package only.
+-most of the middlewares are community driven.
+-if you want any middleware you need to install  
+
+https://expressjs.com/en/resources/middleware.html
+
+body-parser
+Node.js body parsing middleware.
+
+Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
+
+Parsers supported by body-parser Middleware:
+.............................................
+
+This module provides the following parsers:
+
+1.JSON body parser
+2.Raw body parser
+3.Text body parser
+4.URL-encoded form body parser
+
+Steps:
+
+1.install middleware
+$ npm install body-parser
+
+2.Any Middleware must be registered with Application Object.
+in order to activate middleware.
+
+app.use(middleware)
+
+//express app. 
+const express = require('express')
+const bodyParser = require('body-parser')
+const userRouter = require('./routers/users.router')
+
+//create application object 
+const app = express()
+
+//Register Body parsers
+// parse application/json
+app.use(bodyParser.json())
+
+//binding routers with App 
+app.use('/api/users',userRouter)
+
+
+//global routing/home page 
+app.get('/', (req, res) => {
+    res.status(200).json({ page: 'HOME PAGE' })
+})
+
+
+//start server
+
+let serverinfo = app.listen(3000, () => {
+    console.log(`Express server is running @ ${serverinfo.address().port}`)
+})
+
+//router Object 
+const express = require('express')
+const userService = require('../services/user.service')
+const userRouter = express.Router()
+
+userRouter.get('/list', async (req, res) => {
+    try {
+        const users = await userService.findAll();
+        res.status(200).json(users)
+    }
+    catch (err) {
+        res.status(200).json(err)
+    }
+
+})
+userRouter.get('/:id', (req, res) => {
+    res.send(`user ${req.params.id}`)
+})
+
+//with middleware : bodyParser middleware
+userRouter.post('/save', async (req, res) => {
+    try {
+        const user = req.body
+        const users = await userService.create(user);
+        console.log(users)
+        res.status(201).location("/api/users/save").json({ message: 'User Created' })
+    }
+    catch (error) {
+        res.status(500).json({ message: error })
+   }
+
+})
+userRouter.put('/update', (req, res) => {
+    res.status(200).send('PUT')
+})
+userRouter.delete('/remove', (req, res) => {
+    res.status(200).send('DELETE')
+})
+
+module.exports = userRouter;
+.....................................................................................
+				Logger Middleware- morgan
+.....................................................................................
+
+npm install morgan
+
+//express app. 
+const express = require('express')
+const bodyParser = require('body-parser')
+const userRouter = require('./routers/users.router')
+const morgan = require('morgan')
+
+//create application object 
+const app = express()
+
+//Register Body parsers
+// parse application/json
+app.use(bodyParser.json())
+app.use(morgan('tiny'))
+
+
+//binding routers with App 
+app.use('/api/users', userRouter)
+
+
+//global routing/home page 
+app.get('/', (req, res) => {
+    res.status(200).json({ page: 'HOME PAGE' })
+})
+
+
+//start server
+
+let serverinfo = app.listen(3000, () => {
+    console.log(`Express server is running @ ${serverinfo.address().port}`)
+})
+...................................................................................
+			How to use Express cli project
+...................................................................................
+npm install -g express-generator
+
+express --view=pug myapp
+
+change directory:
+     > cd myapp
+
+   install dependencies:
+     > npm install
+
+   run the app:
+     > SET DEBUG=myapp:* & npm start
+
+.....................................................................................
+			Integration with database-Mongodb
+.....................................................................................
+
+db/conn.js
+
+const { MongoClient } = require("mongodb");
+
+const Db = "mongodb://localhost:27017/demo";//process.env.ATLAS_URI;
+
+const client = new MongoClient(Db, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+var _db;
+
+module.exports = {
+  connectToServer: function (callback) {
+    client.connect(function (err, db) {
+      // Verify we got a good "db" object
+      if (db) {
+        _db = db.db("employees");
+        console.log("Successfully connected to MongoDB.");
+      }
+      return callback(err);
+    });
+  },
+
+  getDb: function () {
+    return _db;
+  },
+};
+
+///
+bin/www
+
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+const dbo = require("../db/conn");
+
+var debug = require('debug')('myapp:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port, () => {
+  // perform a database connection when server starts
+  dbo.connectToServer(function (err) {
+    if (err) console.error(err);
+
+  });
+});
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+How to send data ?
+var express = require('express');
+var router = express.Router();
+// This will help us connect to the database
+const dbo = require("../db/conn");
+
+// This help convert the id from string to ObjectId for the _id.
+const ObjectId = require("mongodb").ObjectId;
+
+/* GET users listing. */
+router.get('/', function (req, res, next) {
+  //data from mongo db
+  let db_connect = dbo.getDb("employees");
+  db_connect
+    .collection("records")
+    .find({})
+    .toArray(function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+
+});
+
+module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
