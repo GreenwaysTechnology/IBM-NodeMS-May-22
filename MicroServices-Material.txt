@@ -1,0 +1,491 @@
+                  		Micro services 
+			        Implementations 
+				    on 
+				 Node.js
+.....................................................................................
+
+What is MicroService?
+ It describes a particular way of designing software applications as suites of independently deployable services
+
+It is an architectural style that structures an application as a collection of services that are
+
+Highly maintainable and testable
+=>Loosely coupled
+=>Independently deployable
+=>Organized around business capabilities
+=>Owned by a small team
+
+What is Monolothic ?
+ It describes a particular way of designing software applications, deployed as single 
+unit
+
+How to start building distributed apps based Microservice Arch?
+
+You have to follow the pattern language : Collection of design patterns
+
+
+Patterns:
+
+Patterns can be classified into two category
+
+System Design
+  ->Microservice 
+  ->Monolithic
+
+1.1.Decomposition
+    How to an analysis the problem domain
+ Decompose by business capability
+ Decompose by subdomain
+ Self-contained Servicenew
+ Service per teamnew
+
+2.Program implemetation
+
+Data management
+1.Database per Service
+2.Shared database
+3.Saga
+4.API Composition
+5.CQRS
+6.Domain event
+7.Event sourcing
+
+Coding:
+
+API Design - Service Representation
+  =>REST API
+  =>SOAP API
+  =>GraphQL API
+  =>RPC / RPI
+
+API Communication style
+=>Remote Procedure Invocation
+=>Messaging
+=>Domain-specific protocol
+=>Idempotent Consumer
+
+
+API Communication - Reliability
+=>Circuit Breaker
+=>Timeout
+=>Fallback
+=>BulkHead
+=>Retry
+
+API Communication -Service Discovery
+
+   Api communication should happen via centeralized broker
+
+=>Client-side discovery
+=>Server-side discovery
+=>Service registry
+=>Self registration
+=>3rd party registration
+
+Cross cutting concerns
+=>Microservice chassis
+=>Service Template
+=>Externalized configuration
+
+
+Security
+=>Access Token
+
+Testing
+
+=>Service Component Test
+=>Consumer-driven contract test
+=>Consumer-side contract test
+........................................................................
+
+Production Stage:
+
+Deployment patterns
+
+=>Multiple service instances per host
+=>Service instance per host
+=>Service instance per VM
+=>Service instance per Container
+=>Serverless deployment
+=>Service deployment platform
+
+Monitoring Apps in Production-Observability
+=>Log aggregation
+=>Application metrics
+=>Audit logging
+=>Distributed tracing
+=>Exception tracking
+=>Health check API
+=>Log deployments and changes
+....................................................................................
+				Microservice Arch Phases
+
+1.System Design
+2.Development
+3.Testing
+4.Deployment
+5.Maintaince and Monitoring
+....................................................................................
+			 Micro service Implementations
+
+
+Microservices are just concepts, we can implement in any language, any framework,libs
+
+Java script implementations(Node.js Implementations).
+
+1.Moleculer
+2.Nest
+3.IBM Strong loop and loopback
+.....................................................................................
+				Moleculer
+....................................................................................
+
+Progressive microservices framework for Node.js
+
+Moleculer is framework which has implemented most of common microservices design patterns.
+
+Moleculer features:
+
+1.Promise-based solution (async/await compatible)
+2.request-reply concept
+3.support event driven architecture with balancing
+4.built-in service registry & dynamic service discovery
+5.load balanced requests & events (round-robin, random, cpu-usage, latency, sharding)
+6.many fault tolerance features (Circuit Breaker, Bulkhead, Retry, Timeout, Fallback)
+7.plugin/middleware system
+8.support versioned services
+9.support Streams
+10.service mixins
+11.built-in caching solution (Memory, MemoryLRU, Redis)
+12.pluggable loggers (Console, File, Pino, Bunyan, Winston, Debug, Datadog, Log4js)
+13.pluggable transporters (TCP, NATS, MQTT, Redis, NATS Streaming, Kafka, AMQP 0.9, AMQP 1.0)
+14.pluggable serializers (JSON, Avro, MsgPack, Protocol Buffer, Thrift)
+15.pluggable parameter validator
+16.multiple services on a node/server
+17.master-less architecture, all nodes are equal
+18.parameter validation with fastest-validator
+19.built-in metrics feature with reporters (Console, CSV, Datadog, Event, Prometheus, StatsD)
+20.built-in tracing feature with exporters (Console, Datadog, Event, Jaeger, Zipkin)
+21.official API gateway, Database access and many other modules…
+.....................................................................................
+
+Moleculer setup:
+
+project creations;
+
+1.from begining like normal node application.
+2.moleculer cli- to setup realtime project with all artifacts.
+
+
+1.Service
+ A service is a simple JavaScript module containing some part of a complex application. 
+ A service represents a biz logic in your application.
+
+2.Service Broker : == Spring Container
+
+ Service Broker is the heart of Moleculer.
+
+It is responsible for management and communication between services (local and remote). 
+
+3.node :
+ A node is a simple OS process running on a local or external network.
+ A single instance of a node can host one or many services.
+ node js platform - v8+libvu..
+
+Each node must have an instance of Service Broker.
+
+"Service Broker is one single Node instance - Node runtime"
+
+4.Transporter
+	Transporter is a communication bus that services use to exchange messages. 
+ It transfers events, requests and responses.
+
+5.Gateway
+     API Gateway exposes Moleculer services to end-users.
+ The gateway is a regular Moleculer service running a (HTTP, WebSockets, etc.) server. It handles the incoming requests, maps them into service calls, and then returns appropriate responses.
+.....................................................................................
+
+Services:
+
+1.Back end services- rpc
+   Services are used to encasulate biz logics like database operations,any biz
+
+2.HTTP services
+   Services are exposed for outsideworld
+
+
+service names and file names:
+
+math.service.js
+hello.service.js
+
+Use case 1: how to create ServiceBroker object
+
+const { ServiceBroker } = require("moleculer")
+
+//create broker object
+const broker = new ServiceBroker();
+
+node services/hello.service.js
+[2022-05-25T10:26:15.256Z] INFO  laptop-r2tggfdl-18360/BROKER: Moleculer v0.14.21 is starting...
+[2022-05-25T10:26:15.259Z] INFO  laptop-r2tggfdl-18360/BROKER: Namespace: <not defined>
+[2022-05-25T10:26:15.259Z] INFO  laptop-r2tggfdl-18360/BROKER: Node ID: laptop-r2tggfdl-18360
+[2022-05-25T10:26:15.263Z] INFO  laptop-r2tggfdl-18360/REGISTRY: Strategy: RoundRobinStrategy
+[2022-05-25T10:26:15.264Z] INFO  laptop-r2tggfdl-18360/REGISTRY: Discoverer: LocalDiscoverer
+[2022-05-25T10:26:15.281Z] INFO  laptop-r2tggfdl-18360/BROKER: Serializer: JSONSerializer
+[2022-05-25T10:26:15.297Z] INFO  laptop-r2tggfdl-18360/BROKER: Validator: FastestValidator
+[2022-05-25T10:26:15.302Z] INFO  laptop-r2tggfdl-18360/BROKER: Registered 13 middleware(s).
+[2022-05-25T10:26:15.316Z] INFO  laptop-r2tggfdl-18360/$NODE: Service '$node' stopped.
+[2022-05-25T10:26:15.316Z] INFO  laptop-r2tggfdl-18360/BROKER: ServiceBroker is stopped. Good bye.
+...............................................................................
+				How to start ServiceBroker
+..................................................................................
+const { ServiceBroker } = require('moleculer')
+
+const broker = new ServiceBroker()
+
+
+
+//start the container
+function main() {
+    broker.start().then(() => {
+        console.log('Service Broker is Ready!')
+    }).catch(err => console.log(err))
+}
+main()
+....................................................................................
+			How to write simple service
+
+const { ServiceBroker } = require('moleculer')
+
+const broker = new ServiceBroker()
+
+//service definition
+broker.createService({
+    name: 'hello',
+    actions: {
+        //apis 
+        sayHello() {
+            return 'Hello'
+        }
+    }
+})
+
+//start the container
+// function main() {
+//     broker.start().then(() => {
+//         console.log('Service Broker is Ready!')
+//         //call service
+//         broker.call('hello.sayHello').then(res => {
+//             console.log(res)
+//         }).catch(err => {
+//             console.log(err)
+//         })
+
+//     }).catch(err => console.log(err))
+// }
+async function main() {
+    try {
+        await broker.start()
+        const res = await broker.call('hello.sayHello')
+        console.log(res)
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+main()
+....................................................................................
+				Multi Api Service
+...................................................................................
+const { ServiceBroker } = require('moleculer')
+const broker = new ServiceBroker()
+
+broker.createService({
+    name: 'greeter',
+    actions: {
+        //apis 
+        sayHello() {
+            return 'Hello'
+        },
+        sayHai() {
+            return 'Hai'
+        },
+        sayGreet() {
+            return 'Greet'
+        }
+
+    }
+})
+
+async function main() {
+    try {
+        await broker.start()
+        const hello = await broker.call('greeter.sayHello')
+        const hi = await broker.call('greeter.sayHai')
+        const greet = await broker.call('greeter.sayGreet')
+        console.log(`${hello} ${hi} ${greet}`)
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+main()
+
+...................................................................................
+				Multiple services
+
+....................................................................................
+const { ServiceBroker } = require('moleculer')
+const broker = new ServiceBroker()
+
+//hello Service
+broker.createService({
+    name: 'hello',
+    actions: {
+        sayHello() {
+            return 'Hello'
+        }
+    }
+})
+broker.createService({
+    name: 'hai',
+    actions: {
+        sayHai() {
+            return 'Hai'
+        }
+    }
+})
+
+broker.createService({
+    name: 'greeter',
+    actions: {
+        sayGreet() {
+            return 'Greet'
+        }
+
+    }
+})
+async function main() {
+    try {
+        await broker.start()
+        const hello = await broker.call('hello.sayHello')
+        const hi = await broker.call('hai.sayHai')
+        const greet = await broker.call('greeter.sayGreet')
+        console.log(`${hello} ${hi} ${greet}`)
+
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+main()
+....................................................................................
+			  Service Versioning
+..................................................................................
+
+const { ServiceBroker } = require("moleculer")
+
+const broker = new ServiceBroker();
+
+broker.createService({
+    name: 'hello',
+    version: 1,
+    actions: {
+        sayHello() {
+            return `Hello V1`
+        }
+    }
+})
+broker.createService({
+    name: 'hello',
+    version: 2,
+    actions: {
+        sayHello() {
+            return `Hello V2`
+        }
+    }
+})
+
+async function main() {
+
+    try {
+        await broker.start()
+        console.log('Service Broker is ready')
+        //invoke service api
+        //versionNo.serviceName.serviceMethod
+        const helloV1 = await broker.call('v1.hello.sayHello');
+        const helloV2 = await broker.call('v2.hello.sayHello');
+        console.log(helloV1,helloV2)
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+main();
+....................................................................................
+				Actions Types
+...................................................................................
+actions:
+  Are used to represent methods.
+
+Methods can be represented in two ways:
+
+Way -1:
+actions : {
+ 
+  sayHello(){
+     return 'hello'
+  }
+
+}
+Way-2: you can add meta information to a method
+
+meta informations will discuss later.
+
+actions: {
+  
+  sayHello: {
+    
+       handler(){
+          
+          return 'Hello'
+           
+       } 
+  }
+
+} 
+const { ServiceBroker } = require('moleculer')
+const broker = new ServiceBroker()
+
+broker.createService({
+    name: 'greeter',
+    actions: {
+        //way 1
+        sayHello() {
+            return 'Hello'
+        },
+        //way -2
+        sayHai: {
+            handler() {
+                return 'Hai'
+            }
+        }
+    }
+})
+
+async function main() {
+    try {
+        await broker.start()
+        const hello = await broker.call('greeter.sayHello')
+        const hi = await broker.call('greeter.sayHai')
+        console.log(`${hello} ${hi}`)
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+main()
+
+
+
